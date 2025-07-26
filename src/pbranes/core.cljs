@@ -1,4 +1,4 @@
 (ns pbranes.core)
 
 (defn init! []
-  (println "hello world"))
+  (js/alert "Hello pbranes-graphics-lib"))
