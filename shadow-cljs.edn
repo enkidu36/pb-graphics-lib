@@ -1,0 +1,22 @@
+{:deps true
+ 
+ :nrepl {:middleware [cider.nrepl/cider-middleware 
+                      refactor-nrepl.middleware/wrap-refactor] ;; refactor-nrepl is optional
+         :port 50655} 
+
+ :dev-http {9000 "public"
+            9001 "out/test"}
+
+ :builds
+ {:dev
+  {:target :browser
+   :modules {:main {:init-fn pbranes.core/init!}}
+   :asset-path "/js"
+   }
+
+  ;; unit tests
+  :browser-test
+  {:target :browser-test
+   :test-dir "out/test"}}}
+
+

@@ -2,7 +2,11 @@
 .cpcache/
 .lsp/
 .nrepl-port
+.shadow-cljs/
+node_modules/
+public/js/cljs-runtime/
 
 out/
 
 *.*~
+*.*#
