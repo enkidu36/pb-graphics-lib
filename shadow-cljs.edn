@@ -10,7 +10,7 @@
  :builds
  {:dev
   {:target :browser
-   :modules {:main {:init-fn pbranes.core/init!}}
+   :modules {:main {:init-fn pbranes.app/init!}}
    :asset-path "/js"
    }
 

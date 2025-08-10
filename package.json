@@ -1,5 +1,11 @@
 {
   "devDependencies": {
     "shadow-cljs": "^3.1.8"
+  },
+  "dependencies": {
+    "dat.gui": "^0.7.9",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router": "^7.7.1"
   }
 }

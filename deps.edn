@@ -3,5 +3,8 @@
  :deps
  {org.clojure/clojurescript {:mvn/version "1.12.42"}
   cider/cider-nrepl {:mvn/version "0.57.0"}
+  refactor-nrepl/refactor-nrepl {:mvn/version "3.11.0"}
+  
   thheller/shadow-cljs {:mvn/version "3.1.7"}
+  lilactown/helix {:mvn/version "0.1.11"}
   }}
