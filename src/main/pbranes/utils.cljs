@@ -70,21 +70,20 @@
       shader
       (js/console.log (.getShaderInfoLog gl shader)))))
 
-(defn create-vertex-buffer [gl buffer-data]
-  (when buffer-data
+(defn create-vertex-buffer [gl vertices]
+  (when vertices
     (let [vertex-buffer (.createBuffer gl)]
 
       (.bindBuffer gl (.-ARRAY_BUFFER gl) vertex-buffer)
-      (.bufferData gl (.-ARRAY_BUFFER gl) (js/Float32Array. buffer-data) (.-STATIC_DRAW gl))
+      (.bufferData gl (.-ARRAY_BUFFER gl) (js/Float32Array. vertices) (.-STATIC_DRAW gl))
 
       vertex-buffer)))
 
-(defn create-index-buffer [gl buffer-data]
-  (when buffer-data
+(defn create-index-buffer [gl indices]
+  (when indices
     (let [index-buffer (.createBuffer gl)]
-      5
       (.bindBuffer gl (.-ELEMENT_ARRAY_BUFFER gl) index-buffer)
-      (.bufferData gl (.-ELEMENT_ARRAY_BUFFER gl) (js/Uint16Array. buffer-data) (.-STATIC_DRAW gl))
+      (.bufferData gl (.-ELEMENT_ARRAY_BUFFER gl) (js/Uint16Array. indices) (.-STATIC_DRAW gl))
 
       index-buffer)))
 
