@@ -10,14 +10,14 @@
 ;; Square vertices in clip space.
 ;; Clipspace coordinates go from -1 to 1 regardless of size of canvas
 (def vertices
-  [-50 0 0
-   50 0 0
-   -1 0.25 0
-   1 0.25 0
+  [-0.5  0.5 0
+   -0.5 -0.5 0
+    0.5 -0.5 0
+    0.5  0.5 0
    ])
 
 (def indices
-  [0 1 2 3])
+  [0 1 2 0 2 3])
 
 (def dat-gui (atom nil))
 
@@ -68,14 +68,14 @@ void main(void) {
     ;; return program
     program))
 
-(defn init-buffers [gl program vbo ibo]
+(defn init-buffers [gl program vertices indices]
   (let [vertex-array (u/create-vertex-array gl)
-        index-buffer (u/create-index-buffer gl ibo)]
+        index-buffer (u/create-index-buffer gl indices)]
 
     ;; Create vertex array object
     (.bindVertexArray gl vertex-array)
 
-    (u/create-vertex-buffer gl vbo)
+    (u/create-vertex-buffer gl vertices)
 
     ;; Provide instructions for VAO to use later in Draw
     (.enableVertexAttribArray gl (.-aVertexPosition program))
@@ -93,23 +93,16 @@ void main(void) {
   (.bindVertexArray gl (:vertex-array buffers))
   (.bindBuffer gl (.-ELEMENT_ARRAY_BUFFER gl) (:index-buffer buffers))
 
-  (.drawElements gl (.-LINES gl) (count indices) (.-UNSIGNED_SHORT gl) 0)
+  (.drawElements gl (.-TRIANGLES gl) (count indices) (.-UNSIGNED_SHORT gl) 0)
 
   ;; clean
   (u/clear-all-arrays-buffers gl))
 
 (defn init [gl controls]
   (.clearColor gl 0 0 0 1)
-  (let [floor (js/Floor.)
-        program (init-program gl)
-        buffers (init-buffers gl program vertices indices)
-        pallette (clj->js {:color1 "#FF0000"})]
+  (let [program (init-program gl)
+        buffers (init-buffers gl program vertices indices)]
 
-    (js/console.log floor.vertices)
-    (js/console.log floor.indices)
-    
-    ;; (.addFolder controls "Folder")
-    ;; (.addColor controls pallette "color1")
 
     (draw gl buffers)))
 
