@@ -3,6 +3,17 @@
             [helix.dom :as d]
             [helix.hooks :as hooks]
             [pbranes.utils :as u]
+            [pbranes.webgl.constants :refer [ARRAY-BUFFER
+                                             ELEMENT-ARRAY-BUFFER
+                                             FLOAT
+                                             FRAGMENT-SHADER
+                                             LINK-STATUS
+                                             TRIANGLES
+                                             STATIC-DRAW
+                                             UNSIGNED-SHORT
+                                             VERTEX-SHADER
+
+]]
             ["dat.gui" :as dg]))
 
 (set! *warn-on-infer* false)
@@ -10,14 +21,15 @@
 ;; Square vertices in clip space.
 ;; Clipspace coordinates go from -1 to 1 regardless of size of canvas
 (def vertices
-  [-50 0 0
-   50 0 0
-   -1 0.25 0
-   1 0.25 0
+  [-0.5  0.5 0
+   -0.5 -0.5 0
+    0.5 -0.5 0
+    0.5  0.5 0
    ])
 
 (def indices
-  [0 1 2 3])
+  [0 1 2
+   0 2 3])
 
 (def dat-gui (atom nil))
 
@@ -43,20 +55,20 @@ void main(void) {
   out  vec4 fragColor;
 
   void main(void) {
-      fragColor = vec4(1.0, 0.0, 0.0, 1.0);
+      fragColor = vec4(1.0, 0.0, 1.0, 1.0);
   }
 ")
 
 (defn init-program [gl]
-  (let [vertex-shader (u/compile-shader gl vs-shader (.-VERTEX_SHADER gl))
-        fragment-shader (u/compile-shader gl fs-shader (.-FRAGMENT_SHADER gl))
+  (let [vertex-shader (u/compile-shader gl vs-shader VERTEX-SHADER)
+        fragment-shader (u/compile-shader gl fs-shader FRAGMENT-SHADER)
         program (.createProgram gl)]
 
     (.attachShader gl program vertex-shader)
     (.attachShader gl program fragment-shader)
     (.linkProgram gl program)
 
-    (when (not (.getProgramParameter gl program (.-LINK_STATUS gl)))
+    (when (not (.getProgramParameter gl program LINK-STATUS))
       (js/console.error "Could not initialize shaders"))
 
     ;; Use this program instance
@@ -68,18 +80,23 @@ void main(void) {
     ;; return program
     program))
 
-(defn init-buffers [gl program vbo ibo]
+(defn init-buffers [gl program vs is]
   (let [vertex-array (u/create-vertex-array gl)
-        index-buffer (u/create-index-buffer gl ibo)]
+        vertex-buffer (u/create-vertex-buffer gl vs)
+        index-buffer (u/create-index-buffer gl is)]
 
     ;; Create vertex array object
     (.bindVertexArray gl vertex-array)
-
-    (u/create-vertex-buffer gl vbo)
+    (.bindBuffer gl ARRAY-BUFFER vertex-buffer)
+    (.bufferData gl ARRAY-BUFFER (js/Float32Array. vs) STATIC-DRAW )
 
     ;; Provide instructions for VAO to use later in Draw
     (.enableVertexAttribArray gl (.-aVertexPosition program))
-    (.vertexAttribPointer gl (.-aVertexPosition program) 3 (.-FLOAT gl) false 0 0)
+    (.vertexAttribPointer gl (.-aVertexPosition program) 3 FLOAT false 0 0)
+
+    ;; Setting up the IBO
+    (.bindBuffer gl ELEMENT-ARRAY-BUFFER  index-buffer)
+    (.bufferData gl ELEMENT-ARRAY-BUFFER (js/Uint16Array. is) STATIC-DRAW)
 
     (u/clear-all-arrays-buffers gl)
 
@@ -91,26 +108,22 @@ void main(void) {
   (u/clear-scene gl)
 
   (.bindVertexArray gl (:vertex-array buffers))
-  (.bindBuffer gl (.-ELEMENT_ARRAY_BUFFER gl) (:index-buffer buffers))
+  (.bindBuffer gl ELEMENT-ARRAY-BUFFER (:index-buffer buffers))
 
-  (.drawElements gl (.-LINES gl) (count indices) (.-UNSIGNED_SHORT gl) 0)
+  (.drawElements gl TRIANGLES (count indices) UNSIGNED-SHORT 0)
 
   ;; clean
   (u/clear-all-arrays-buffers gl))
 
 (defn init [gl controls]
+
+  ;; Set canvas size and clear color
+  (set! (.-width (.-canvas gl)) (.-innerWidth js/window))
+  (set! (.-height (.-canvas gl)) (.-innerHeight js/window))
   (.clearColor gl 0 0 0 1)
-  (let [floor (js/Floor.)
-        program (init-program gl)
-        buffers (init-buffers gl program vertices indices)
-        pallette (clj->js {:color1 "#FF0000"})]
 
-    (js/console.log floor.vertices)
-    (js/console.log floor.indices)
-    
-    ;; (.addFolder controls "Folder")
-    ;; (.addColor controls pallette "color1")
-
+  (let [program (init-program gl)
+        buffers (init-buffers gl program vertices indices)]
     (draw gl buffers)))
 
 (defnc page []
