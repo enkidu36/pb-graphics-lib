@@ -52,22 +52,6 @@
     (build-floor floor)))
 
 
-
-
-(defn make-floor [dimension lines]
-
-  (let [cnt (* 2 (/ dimension lines))
-        increment (* (/ dimension cnt))
-        sz  (+ (* 2 (+ cnt 1)) (* 2 cnt) 1)
-        v (into [] (range sz))
-        i (into [] (range 52))]
-
-    (reduce  +  v)
-    
-    ))
-
-(make-floor 50 5)
-
 (comment
 
   (def floor (create-floor 50 5))
