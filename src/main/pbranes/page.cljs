@@ -2,7 +2,7 @@
   (:require [helix.core :refer [defnc $ <>]]
             [helix.dom :as d]
             [helix.hooks :as hooks]
-            [pbranes.utils :as u]
+            [pbranes.webgl.utils :as u]
             [pbranes.webgl.constants :refer [ARRAY-BUFFER
                                              ELEMENT-ARRAY-BUFFER
                                              FLOAT
@@ -118,8 +118,7 @@ void main(void) {
 (defn init [gl controls]
 
   ;; Set canvas size and clear color
-  (set! (.-width (.-canvas gl)) (.-innerWidth js/window))
-  (set! (.-height (.-canvas gl)) (.-innerHeight js/window))
+  (u/auto-resize-canvas (.-canvas gl))
   (.clearColor gl 0 0 0 1)
 
   (let [program (init-program gl)
