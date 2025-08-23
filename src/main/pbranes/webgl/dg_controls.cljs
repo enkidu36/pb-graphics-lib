@@ -1,6 +1,16 @@
 (ns pbranes.webgl.dg-controls
   (:require ["dat.gui" :as dg]))
 
+(defn normalize-color
+  "Normalize color map values to 0 - 1"
+  [color]
+  (map #(/ % 255)))
+
+(defn de-normalize-color
+  "De-normalize color map values back to 0 - 255"
+  [color]
+  (map #(* % 255) color))
+
 (defn folder?
   "Setting is a folder when it is a map and has no value"
   [setting]
