@@ -23,7 +23,7 @@
   [options]
   (if (:gui options)
     (:gui options)
-    (dg/GUI. (clj->js (merge {:width 300} (if options options {}))))))
+    (dg/GUI. (clj->js options))))
 
 (defn add-state! [gui k state]
   (.add gui (clj->js @state) (clj->js k)))
@@ -36,10 +36,6 @@
 
 (defn add-min-max! [gui state k min max step]
   (.add gui (clj->js @state) (clj->js k) min max step))
-
-(defn add-action! [gui k state setting]
-  (swap! state assoc k setting)
-  (add-state! gui k state))
 
 (defn make-controller! [gui k state setting]
   (let [{:keys [value
@@ -66,7 +62,9 @@
 
      (for [[k v] settings]
        (cond
-         (action? v) (add-action! gui k state v)
+         (action? v) (do
+                       (swap! state assoc k v)
+                       (add-state! gui k state))
 
          (folder? v) (configure-controls v
                                          {:gui (add-folder! gui k)})
@@ -75,32 +73,15 @@
          (make-controller! gui k state v))))))
 
 (comment
-(configure-controls  {"Parent Color" {:value 0
-                                      :min 0
-                                      :max 100
-                                      :step 2
-                                      :on-change (fn [v] (js/console.log (str "Hello " v)))}
-                     "Color" {"Sphere Color" {:value "#ff0000"}
-                              "Square Color" {:value "#00ff00"}
-                              "Triangle Color" {:value "#0000ff"}}}
-                     )
+  (configure-controls  {"Parent Color" {:value 0
+                                        :min 0
+                                        :max 100
+                                        :step 2
+                                        :on-change (fn [v]
+                                                     (js/console.log (str "Hello " v)))}
+                        "Color" {"Sphere Color" {:value "#ff0000"}
+                                 "Square Color" {:value "#00ff00"}
+                                 "Triangle Color" {:value "#0000ff"}}})
 
-  (def settings {"Folder" {"Sphere Color"
-                           {:value [25 255 1]
-                            :on-change #(js/console.log %)}
-
-                           "Light Diffuse Color"
-                           {:value "#000000"
-                            :on-change #(js/console.log %)}}})
-
-  (configure-controls settings {:width 300})
-
-  (def tst {:min 0 :max 1})
-
-  (defn tst-fn []
-    (let [{:keys [min max on-change] :or {on-change (fn [] nil)}} tst]
-      [min max on-change]))
-  (tst-fn)
-
-  ;; comments
+;; comments
   )
