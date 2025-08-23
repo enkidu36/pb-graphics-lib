@@ -23,7 +23,7 @@
   [options]
   (if (:gui options)
     (:gui options)
-    (dg/GUI. (clj->js (merge {:width 300} options)))))
+    (dg/GUI. (clj->js (merge {:width 300} (if options options {}))))))
 
 (defn add-state! [gui k state]
   (.add gui (clj->js @state) (clj->js k)))
@@ -57,21 +57,34 @@
 
       (.onChange controller (clj->js (fn [v] (on-change v  @state)))))))
 
-(defn configure-controls [settings options]
-  (let [gui (get-GUI options)
-        state (atom {})]
+(defn
+  configure-controls
+  ([settings] (configure-controls settings {:width 300}))
+  ([settings options]
+   (let [gui (get-GUI options)
+         state (atom {})]
 
-    (for [[k v] settings]
-      (cond
-        (action? v) (add-action! gui k state v)
+     (for [[k v] settings]
+       (cond
+         (action? v) (add-action! gui k state v)
 
-        (folder? v) (configure-controls v
-                                        {:gui (add-folder! gui k)})
+         (folder? v) (configure-controls v
+                                         {:gui (add-folder! gui k)})
 
-        :else
-        (make-controller! gui k state v)))))
+         :else
+         (make-controller! gui k state v))))))
 
 (comment
+(configure-controls  {"Parent Color" {:value 0
+                                      :min 0
+                                      :max 100
+                                      :step 2
+                                      :on-change (fn [v] (js/console.log (str "Hello " v)))}
+                     "Color" {"Sphere Color" {:value "#ff0000"}
+                              "Square Color" {:value "#00ff00"}
+                              "Triangle Color" {:value "#0000ff"}}}
+                     )
+
   (def settings {"Folder" {"Sphere Color"
                            {:value [25 255 1]
                             :on-change #(js/console.log %)}
