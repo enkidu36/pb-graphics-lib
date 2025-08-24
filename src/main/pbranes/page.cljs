@@ -131,7 +131,7 @@ void main(void) {
     (hooks/use-effect
      :once
      (let [gl (u/get-context canvas)
-           controls (dg/GUI.)]
+           controls nil]
        (init gl controls)
 
        (fn unmount []
