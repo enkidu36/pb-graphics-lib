@@ -4,16 +4,17 @@
 (defn normalize-color
   "Normalize color map values to 0 - 1"
   [color]
-  (map #(/ % 255)))
+  (mapv #(/ % 255) color))
 
 (defn de-normalize-color
   "De-normalize color map values back to 0 - 255"
   [color]
-  (map #(* % 255) color))
+  (mapv #(* % 255) color))
 
 (defn folder?
   "Setting is a folder when it is a map and has no value"
   [setting]
+  (js/console.log "folder?")
   (and (map? setting) (nil? (:value setting))))
 
 (defn action?
