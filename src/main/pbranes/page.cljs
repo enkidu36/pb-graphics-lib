@@ -28,7 +28,7 @@
    ])
 
 (def indices
-  [0 1 2
+  [0 1 1
    0 2 3])
 
 (def dat-gui (atom nil))
@@ -131,7 +131,7 @@ void main(void) {
     (hooks/use-effect
      :once
      (let [gl (u/get-context canvas)
-           controls nil]
+           controls (dg/GUI. {:width 300})]
        (init gl controls)
 
        (fn unmount []

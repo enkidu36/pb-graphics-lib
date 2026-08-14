@@ -66,7 +66,7 @@
 
 (defn
   configure-controls
-  ([settings] (configure-controls settings {:width 300}))
+  ([settings] (configure-controls settings {:width 400}))
   ([settings options]
    (let [gui (get-GUI options)
          state (atom {})]
@@ -90,7 +90,9 @@
                                         :step 2
                                         :on-change (fn [v]
                                                      (js/console.log (str "Hello " v)))}
-                        "Color" {"Sphere Color" {:value "#ff0000"}
+                        "Color" {"Sphere Color" {:value "#ff0000"
+                                                 :on-change (fn [v]
+                                                              (js/console.log "Color change: " v))}
                                  "Square Color" {:value "#00ff00"}
                                  "Triangle Color" {:value "#0000ff"}}})
 
